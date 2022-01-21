@@ -1037,6 +1037,66 @@ async function yearwiseSelectedRejected(req,res,next){
   }
 }
 
+const sendQnForCorrection = async (req , res) => {
+  try{
+    const {regno} = req.params;
+    const student = await User.findOne({regno: regno});
+
+    if (!student) return res.status(400).send({Error: "Not Able to Find the User"});
+    if (student.isAdmin) return res.status(400).send({Error: "User is not a student"});
+    if (!student.isSelectedManagement) return res.status(400).send({Error: "User has not selected design domain"});
+    if (!student.attemptedManagement) return res.status(400).send({Error: "User has not attempted the management test"});
+    const responses = student.responseManagement.map(async (response) => {
+      const question = await mQuestion.findById(response.qid);
+      return {...response , questionImage: question.questionImage};
+    });
+
+    return res.status(200).send({responses});
+  } catch (err) {
+    res.status(500).send({err});
+  }
+}
+
+const updateManagementScore = async (req , res , next) => {
+  try {
+    const {regno} = req.params;
+    const student = await User.findOne({regno});
+    const {totalMarksManagement} = req.body;
+
+    if (!student) return res.status(400).send({Error: "Not Able to Find the User"});
+    if (student.isAdmin) return res.status(400).send({Error: "User is not a student"});
+    if (!student.isSelectedManagement) return res.status(400).send({Error: "User has not selected design domain"});
+    if (!student.attemptedManagement) return res.status(400).send({Error: "User has not attempted the management test"});
+
+    student.managementScore = parseInt(totalMarksManagement);
+
+    await student.save();
+    return res.status(201).send(student);
+  } catch (e) {
+    return res.status(500).send({e});
+  }
+}
+
+// module.exports.sendQnForCorrection = async (req , res) => {
+//   try{
+//     const {regno} = req.params;
+//     const student = await User.findOne({regno: regno});
+
+//     if (!student) return res.status(400).send({Error: "Not Able to Find the User"});
+//     if (student.isAdmin) return res.status(400).send({Error: "User is not a student"});
+//     if (!student.isSelectedManagement) return res.status(400).send({Error: "User has not selected design domain"});
+//     if (!student.attemptedManagement) return res.status(400).send({Error: "User has not attempted the management test"});
+//     const responses = student.responseManagement.map(async (response) => {
+//       const question = await mQuestion.findById(response.qid);
+//       return {...response , questionImage: question.questionImage};
+//     });
+
+//     return res.status(200).send({responses});
+//   } catch (err) {
+//     res.status(200).send({err});
+//   }
+// }
+
 // async function  getResponseFunction(req,res,next){
 //   try{
 //     var responses=[];
@@ -1093,7 +1153,9 @@ module.exports ={
     getSelectedOrRejected,
     resetAttempt,
     yearwiseSelectedRejected,
-    getResponsesOfUser
+    getResponsesOfUser,
+    sendQnForCorrection,
+    updateManagementScore
   }
 
 

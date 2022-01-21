@@ -115,6 +115,10 @@ const userSchema = mongoose.Schema(
     type:Number,
     default:0
   },
+  managementScore: {
+    type: Number,
+    default: 0
+  },
   isAdmin:{
      type:Boolean,
      default:false

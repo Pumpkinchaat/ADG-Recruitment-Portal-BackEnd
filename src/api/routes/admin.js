@@ -31,6 +31,7 @@ const acceptAUser = require('../handlers/questions')
 const rejectUser = require('../handlers/questions')
 const getSelectedOrRejected = require('../handlers/questions')
 const resetUser = require('../handlers/questions')
+const correctManagementStudents = require('../handlers/questions');
 
 const login = require('../handlers/admin-auth.js')
 
@@ -38,6 +39,8 @@ const login = require('../handlers/admin-auth.js')
 router.post('/login',login.loginAdminFunction);
 
 //Management Questions
+router.get('/management/:regno/correct-qn' , checkAdmin , correctManagementStudents.sendQnForCorrection);
+router.post('/management/:regno/correct-qn' , checkAdmin , correctManagementStudents.updateManagementScore);
 router.get('/management/get-all-questions',checkAdmin,getmQuestion.getAllManagementQuestionsFunction);
 router.post('/management/add-question',checkAdmin, upload.single('questionImage') ,createManagementQuestion.createManagementQuestionFunction);
 router.get('/management/get-specific-question/:questionId',checkAdmin,getSpecificManagementQuestion.getSpecificManagementQuestionFunction);
