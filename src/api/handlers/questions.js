@@ -48,7 +48,11 @@ const quizData = {
 };
 try{
   const tQuiz = new tQuestion({
-    ...quizData
+    ...quizData,
+    questionImage: {
+      filename: req.file.filename,
+      url: req.file.url
+    }
   });
   await tQuiz.save();
   return res.status(201).send(tQuiz);
@@ -65,7 +69,11 @@ async function createManagementQuestionFunction(req,res,next) {
   };
   try{
     const mQuiz = new mQuestion({
-      ...quizData
+      ...quizData,
+      questionImage: {
+        filename: req.file.filename,
+        url: req.file.url
+      }
     });
     await mQuiz.save();
     return res.status(201).send(mQuiz);
@@ -82,7 +90,11 @@ async function createManagementQuestionFunction(req,res,next) {
     };
     try{
       const dQuiz = new dQuestion({
-        ...quizData
+        ...quizData,
+        questionImage: {
+          filename: req.file.filename,
+          url: req.file.url
+        }
       });
       await dQuiz.save();
       return res.status(201).send(dQuiz);
@@ -252,6 +264,13 @@ async function updateSpecificTQuestionFunction(req,res,next) {
 
     questiontoBeUpdated.yearofstudy = req.body.yearofstudy;
 
+    if (req.file.filename && req.file.url) {
+      questiontoBeUpdated.questionImage = {
+        filename: req.file.filename,
+        url: req.file.url
+      }
+    }
+
     //questiontoBeUpdated.difficulty = req.body.difficulty;
     
     await questiontoBeUpdated.save();
@@ -275,8 +294,12 @@ async function updateSpecificMQuestionFunction(req,res,next) {
   } else {
     questiontoBeUpdated.description = req.body.description;
 
-
-    questiontoBeUpdated.image= req.body.image;
+    if (req.file.filename && req.file.url) {
+      questiontoBeUpdated.questionImage = {
+        filename: req.file.filename,
+        url: req.file.url
+      }
+    }
 
     /* questiontoBeUpdated.yearofstudy = req.body.yearofstudy;
 
@@ -310,6 +333,13 @@ async function updateSpecificDQuestionFunction(req,res,next) {
     questiontoBeUpdated.questionImage= req.body.questionImage;
 
     questiontoBeUpdated.yearofstudy = req.body.yearofstudy;
+
+    if (req.file.filename && req.file.url) {
+      questiontoBeUpdated.questionImage = {
+        filename: req.file.filename,
+        url: req.file.url
+      }
+    }
 
     await questiontoBeUpdated.save();
     res.status(200).send({
